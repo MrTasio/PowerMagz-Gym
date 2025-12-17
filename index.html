@@ -35,7 +35,6 @@
             color: var(--text-dark);
             overflow: hidden;
             overflow-x: hidden;
-            touch-action: manipulation;
         }
 
         /* LOGIN SCREEN */
@@ -1520,16 +1519,18 @@ Sun: Closed`
             });
 
             
-             // Scroll to top instantly without animation
-             var screenInner = selectedScreen.querySelector('.screen-inner');
-                if (screenInner) {
-                    screenInner.scrollTop = 0;
-                }
-
+             
             var selectedScreen = document.getElementById('screen-' + screenName);
             if (selectedScreen) {
                 selectedScreen.classList.add('active');
             }
+
+            // Scroll to top instantly without animation
+            var screenInner = selectedScreen.querySelector('.screen-inner');
+                if (screenInner) {
+                    screenInner.scrollTop = 0;
+                }
+
 
             var navBtns = document.querySelectorAll('.nav-btn');
             navBtns.forEach(function(btn) {
