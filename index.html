@@ -35,6 +35,7 @@
             color: var(--text-dark);
             overflow: hidden;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         /* LOGIN SCREEN */
@@ -1518,6 +1519,13 @@ Sun: Closed`
                 screen.classList.remove('active');
             });
 
+            
+             // Scroll to top instantly without animation
+             var screenInner = selectedScreen.querySelector('.screen-inner');
+                if (screenInner) {
+                    screenInner.scrollTop = 0;
+                }
+
             var selectedScreen = document.getElementById('screen-' + screenName);
             if (selectedScreen) {
                 selectedScreen.classList.add('active');
@@ -1545,11 +1553,24 @@ Sun: Closed`
 
             document.getElementById('trainer-list-view').classList.add('hidden');
             document.getElementById('trainer-detail-view').classList.remove('hidden');
+
+            // Scroll to top instantly
+            var detailView = document.getElementById('trainer-detail-view');
+            var screenInner = detailView.querySelector('.screen-inner');
+            if (screenInner) {
+                screenInner.scrollTop = 0;
+            }
         }
 
         function backToTrainerList() {
             document.getElementById('trainer-list-view').classList.remove('hidden');
             document.getElementById('trainer-detail-view').classList.add('hidden');
+
+             // Scroll to top instantly
+             var listView = document.getElementById('trainer-list-view');
+            if (listView) {
+                listView.scrollTop = 0;
+            }
         }
 
         function toggleAccordion(btn) {
