@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerMagz - Gym Membership Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1f3a;
+            --secondary: #d32f2f;
+            --secondary-dark: #b71c1c;
+            --accent: #000000;
+            --accent-light: #212121;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #1a1f3a;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #d32f2f;
+            --info: #17a2b8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            overflow: hidden;
+            overflow-x: hidden;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a1f3a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            pointer-events: auto;
+        }
+
+        .login-screen.hidden {
+            display: none !important;
+            pointer-events: none;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            animation: loginSlideUp 0.6s ease-out;
+        }
+
+        @keyframes loginSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            animation: logoFloat 3s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .login-form {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            pointer-events: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--secondary);
+        }
+
+        .remember-label {
+            font-size: 13px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--secondary), #ff5252);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .login-footer-text {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .signup-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .signup-link:hover {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .demo-notice {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-notice strong {
+            color: white;
+        }
+
+        /* SPLASH SCREEN */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: splashFadeOut 0.8s ease-in-out 2.5s forwards;
+            pointer-events: auto;
+        }
+
+        .splash-screen.hidden {
+            display: none;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes splashFadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                pointer-events: auto;
+            }
+            50% {
+                pointer-events: none;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.05);
+                pointer-events: none;
+            }
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: splashSlideIn 0.6s ease-out;
+        }
+
+        @keyframes splashSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            animation: logoPulse 2s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .splash-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .splash-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .splash-loader {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .loader-bar {
+            width: 8px;
+            height: 30px;
+            background: var(--secondary);
+            border-radius: 4px;
+            animation: loaderBounce 1.2s ease-in-out infinite;
+        }
+
+        .loader-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .loader-bar:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loader-bar:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loaderBounce {
+            0%, 100% {
+                height: 30px;
+            }
+            50% {
+                height: 60px;
+            }
+        }
+
+        .splash-text {
+            position: absolute;
+            bottom: 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* APP CONTAINER */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: appFadeIn 0.8s ease-in 2.5s forwards;
+            height: 100vh;
+        }
+
+        @keyframes appFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--accent) 0%, #333333 100%);
+            color: white;
+            padding: 20px;
+            padding-top: 15px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-brand {
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .header-brand-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.9;
+            color: var(--secondary);
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            scroll-behavior: smooth;
+            height: 0;
+            min-height: 0;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100%;
+            padding-bottom: 80px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen-inner {
+            padding: 12px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .screen-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+            padding: 0 4px;
+        }
+
+        /* Social Media Post Style */
+        .post {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            animation: slideUp 0.5s ease-out;
+            border-top: 3px solid var(--secondary);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post:nth-child(1) { animation-delay: 2.7s; }
+        .post:nth-child(2) { animation-delay: 2.8s; }
+        .post:nth-child(3) { animation-delay: 2.9s; }
+        .post:nth-child(4) { animation-delay: 3.0s; }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .post-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent), #333333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .post-content {
+            padding: 16px;
+        }
+
+        .post-message {
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .post-tag {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .post-footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            justify-content: center;
+        }
+
+        .heart-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-light);
+            transition: all 0.2s;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .heart-btn.liked {
+            color: var(--secondary);
+        }
+
+        .heart-count {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .membership-hero {
+            background: linear-gradient(135deg, var(--secondary), #ff5252);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(211, 47, 47, 0.3);
+        }
+
+        .member-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .expiry-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .expiry-date {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .trainer-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .trainer-card:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .trainer-image {
+            height: 160px;
+            background: linear-gradient(135deg, var(--accent), #333333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .trainer-info {
+            padding: 16px;
+        }
+
+        .trainer-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .trainer-specialty {
+            font-size: 13px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            margin: 12px 16px 16px 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trainer-detail-header {
+            background: linear-gradient(135deg, var(--accent), #333333);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+            border-radius: 16px;
+            margin: 12px 16px 16px 16px;
+            border-top: 3px solid var(--secondary);
+        }
+
+        .trainer-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(211, 47, 47, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 16px;
+            border: 2px solid var(--secondary);
+        }
+
+        .trainer-detail-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .detail-section {
+            margin-bottom: 16px;
+            padding: 0 16px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .detail-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--light-bg);
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            border-left: 2px solid var(--secondary);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .accordion {
+            margin-bottom: 12px;
+        }
+
+        .accordion-btn {
+            width: 100%;
+            background: var(--light-bg);
+            border: 2px solid var(--border);
+            padding: 14px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .accordion-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .accordion-btn.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s;
+            font-size: 16px;
+        }
+
+        .accordion-icon.active {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            background: var(--card-bg);
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-top: none;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-light);
+            border-radius: 0 0 10px 10px;
+            border-left: 3px solid var(--secondary);
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 2px solid var(--secondary);
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            color: var(--secondary);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .scroll-spacer {
+            height: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .heart-btn.pulse {
+            animation: heartPulse 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">
+                    <img src="logo.jpg" alt="PowerMagz Logo">
+                </div>
+                <h1 class="login-title">PowerMagz</h1>
+                <p class="login-subtitle">Gym</p>
+            </div>
+
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" class="checkbox">
+                    <label for="remember" class="remember-label">Remember me</label>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="demo-notice">
+                <strong>Demo:</strong> Use any email & password to login
+            </div>
+
+            <div class="login-footer">
+                <div class="login-footer-text">Don't have an account?</div>
+                <a class="signup-link" onclick="alert('Sign up feature coming soon!')">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPLASH SCREEN -->
+    <div class="splash-screen hidden" id="splashScreen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <img src="logo.jpg" alt="PowerMagz Logo">
+            </div>
+            <h1 class="splash-title">PowerMagz</h1>
+            <p class="splash-subtitle">Gym</p>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+                <div class="loader-bar"></div>
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+        <div class="splash-text">Loading your experience...</div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div class="app-container" id="appContainer" class="hidden">
+        <!-- HEADER -->
+        <div class="app-header">
+            <div class="header-top">
+                <div>
+                    <div class="header-brand">PowerMagz</div>
+                    <div class="header-brand-sub">Gym</div>
+                </div>
+                <div class="header-icon" onclick="handleLogout()" style="cursor: pointer; color: var(--secondary);" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="app-content">
+            <!-- SCREEN 1: HOME - Social Media Posts -->
+            <div class="screen active" id="screen-home">
+                <div class="screen-inner">
+                    <div class="screen-title">Gym Updates</div>
+
+                    <!-- Post 1 -->
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="logo.jpg" alt="PowerMagz Logo">
+                            </div>
+                            <div class="post-info">
+                                <div class="post-title">PowerMagz Gym</div>
+                                <div class="post-date">Dec 17, 2025</div>
+                            </div>
+                        </div>
+                        <div class="post-image">⚠️</div>
+                        <div class="post-content">
+                            <div class="post-message">Early Closing Today - Gym closes at 6PM due to maintenance. We appreciate your understanding!</div>
+                            <div class="post-tag">Update</div>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-stats">
+                                <span id="post1-likes">0 Likes</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="heart-btn" onclick="toggleLike(this, 'post1-likes')">
+                                <i class="far fa-heart"></i>
+                                <span class="heart-count">Like</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="logo.jpg" alt="PowerMagz Logo">
+                            </div>
+                            <div class="post-info">
+                                <div class="post-title">PowerMagz Gym</div>
+                                <div class="post-date">Dec 15, 2025</div>
+                            </div>
+                        </div>
+                        <div class="post-image">✨</div>
+                        <div class="post-content">
+                            <div class="post-message">New Equipment Alert! Check out our brand new leg press machine in the lower level. Perfect for your leg day workouts!</div>
+                            <div class="post-tag">Notice</div>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-stats">
+                                <span id="post2-likes">0 Likes</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="heart-btn" onclick="toggleLike(this, 'post2-likes')">
+                                <i class="far fa-heart"></i>
+                                <span class="heart-count">Like</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Post 3 -->
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="logo.jpg" alt="PowerMagz Logo">
+                            </div>
+                            <div class="post-info">
+                                <div class="post-title">PowerMagz Gym</div>
+                                <div class="post-date">Dec 12, 2025</div>
+                            </div>
+                        </div>
+                        <div class="post-image">🎉</div>
+                        <div class="post-content">
+                            <div class="post-message">Holiday Schedule - We will be closed on December 25th & 26th for Christmas. Wishing you a wonderful holiday season!</div>
+                            <div class="post-tag">Update</div>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-stats">
+                                <span id="post3-likes">0 Likes</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="heart-btn" onclick="toggleLike(this, 'post3-likes')">
+                                <i class="far fa-heart"></i>
+                                <span class="heart-count">Like</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Post 4 -->
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="logo.jpg" alt="PowerMagz Logo">
+                            </div>
+                            <div class="post-info">
+                                <div class="post-title">PowerMagz Gym</div>
+                                <div class="post-date">Dec 10, 2025</div>
+                            </div>
+                        </div>
+                        <div class="post-image">👩‍🏫</div>
+                        <div class="post-content">
+                            <div class="post-message">Trainer Spotlight! Meet Sarah, our new HIIT specialist! She's excited to help you achieve your fitness goals with high-intensity workouts. Available for personalized sessions!</div>
+                            <div class="post-tag">Notice</div>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-stats">
+                                <span id="post4-likes">0 Likes</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="heart-btn" onclick="toggleLike(this, 'post4-likes')">
+                                <i class="far fa-heart"></i>
+                                <span class="heart-count">Like</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="scroll-spacer"></div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: MEMBERSHIP -->
+            <div class="screen" id="screen-membership">
+                <div class="screen-inner">
+                    <div class="screen-title">Your Membership</div>
+
+                    <div class="membership-hero">
+                        <div class="member-name">Alex Johnson</div>
+                        <div class="status-badge">ACTIVE</div>
+                        <div class="expiry-label">Expires on</div>
+                        <div class="expiry-date">Jan 28, 2026</div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 600;">Membership Details</h3>
+                        <div class="info-row">
+                            <span class="info-label">Type</span>
+                            <span class="info-value">Monthly Unlimited</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">Active</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Started</span>
+                            <span class="info-value">Dec 28, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="scroll-spacer"></div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: TRAINERS -->
+            <div class="screen" id="screen-trainers">
+                <div class="screen-inner" id="trainer-list-view">
+                    <div class="screen-title">Our Trainers</div>
+
+                    <div class="trainer-card" id="trainer-1">
+                        <div class="trainer-image">💪</div>
+                        <div class="trainer-info">
+                            <div class="trainer-name">Marcus Thompson</div>
+                            <div class="trainer-specialty">Strength Training</div>
+                        </div>
+                    </div>
+
+                    <div class="trainer-card" id="trainer-2">
+                        <div class="trainer-image">🏃</div>
+                        <div class="trainer-info">
+                            <div class="trainer-name">Sarah Williams</div>
+                            <div class="trainer-specialty">HIIT & Cardio</div>
+                        </div>
+                    </div>
+
+                    <div class="trainer-card" id="trainer-3">
+                        <div class="trainer-image">🧘</div>
+                        <div class="trainer-info">
+                            <div class="trainer-name">David Chen</div>
+                            <div class="trainer-specialty">Rehabilitation & Mobility</div>
+                        </div>
+                    </div>
+
+                    <div class="scroll-spacer"></div>
+                </div>
+
+                <div class="screen-inner hidden" id="trainer-detail-view">
+                    <button class="back-btn" id="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+
+                    <div class="trainer-detail-header">
+                        <div class="trainer-avatar" id="detail-emoji">💪</div>
+                        <div class="trainer-detail-name" id="detail-name">Marcus Thompson</div>
+                        <div style="font-size: 13px; opacity: 0.9;" id="detail-specialty">Strength Training</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Bio</div>
+                        <div class="detail-content" id="detail-bio">Bio here</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Certifications</div>
+                        <div class="detail-content" id="detail-certs">Certs here</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Available Times</div>
+                        <div class="detail-content" id="detail-times">Times here</div>
+                    </div>
+
+                    <div class="scroll-spacer"></div>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: INFO -->
+            <div class="screen" id="screen-info">
+                <div class="screen-inner">
+                    <div class="screen-title">Gym Info</div>
+
+                    <div class="card">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Hours</h3>
+                        <div class="info-row">
+                            <span class="info-label">Mon-Fri</span>
+                            <span class="info-value">5:30am - 10pm</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Saturday</span>
+                            <span class="info-value">7am - 8pm</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Sunday</span>
+                            <span class="info-value">8am - 6pm</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Location & Contact</h3>
+                        <div class="info-row">
+                            <span class="info-label">Address</span>
+                            <span class="info-value">123 Fitness Ave</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">(555) 123-4567</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">hello@powermagz.com</span>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 16px; margin: 16px 0 12px; font-weight: 600;">Gym Rules & Etiquette</h3>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="rule1">
+                            Peak Hours Policy
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="rule1">
+                            Peak hours are 6-9am and 4-7pm on weekdays. During peak times, please limit cardio to 20 minutes if others are waiting. We have multiple stations available!
+                        </div>
+                    </div>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="rule2">
+                            Equipment Sharing
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="rule2">
+                            Always rerack your weights after use. Wipe down equipment with provided towels. Don't hoard equipment—if you're not actively using it, others may use it between your sets.
+                        </div>
+                    </div>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="rule3">
+                            Guest Policy
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="rule3">
+                            Members may bring one guest per month at no charge. Guests must be signed in at the front desk. Members are responsible for ensuring guests follow all gym rules.
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 16px; margin: 20px 0 12px; font-weight: 600;">FAQs</h3>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="faq1">
+                            Can I freeze my membership?
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="faq1">
+                            Yes! You can freeze your membership for up to 3 months per year. Contact management for details and to set up a freeze.
+                        </div>
+                    </div>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="faq2">
+                            What equipment do you have?
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="faq2">
+                            We have full free weights, 20+ cardio machines, weight machines, cable stations, squat racks, and a dedicated stretching area.
+                        </div>
+                    </div>
+
+                    <div class="accordion">
+                        <button class="accordion-btn" data-accordion="faq3">
+                            Do you offer personal training?
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content" id="faq3">
+                            Yes! Check our Trainers tab to see our team. Personal training sessions available for additional fees. Contact us for pricing.
+                        </div>
+                    </div>
+
+                    <div class="scroll-spacer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" id="nav-home">
+                <i class="nav-icon fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" id="nav-membership">
+                <i class="nav-icon fas fa-id-card"></i>
+                <span>Membership</span>
+            </button>
+            <button class="nav-btn" id="nav-trainers">
+                <i class="nav-icon fas fa-users"></i>
+                <span>Trainers</span>
+            </button>
+            <button class="nav-btn" id="nav-info">
+                <i class="nav-icon fas fa-info-circle"></i>
+                <span>Info</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Handle Login
+        function handleLogin(event) {
+            event.preventDefault();
+            var email = document.getElementById('email').value;
+
+            // Hide login screen
+            document.getElementById('loginScreen').classList.add('hidden');
+
+            // Show splash screen
+            var splashScreen = document.getElementById('splashScreen');
+            splashScreen.classList.remove('hidden');
+
+            // Hide splash and show app after 3.3 seconds
+            setTimeout(function() {
+                splashScreen.classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+            }, 3300);
+
+            // Store login info
+            localStorage.setItem('userEmail', email);
+        }
+
+        // Handle Logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('userEmail');
+                document.getElementById('appContainer').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', function() {
+            var userEmail = localStorage.getItem('userEmail');
+            var splashScreen = document.getElementById('splashScreen');
+            
+            if (userEmail) {
+                // Skip login
+                document.getElementById('loginScreen').classList.add('hidden');
+
+                // Show splash
+                splashScreen.classList.remove('hidden');
+
+                // Show app after splash
+                setTimeout(function() {
+                    splashScreen.classList.add('hidden');
+                    document.getElementById('appContainer').classList.remove('hidden');
+                }, 3300);
+            } else {
+                // Ensure splash is hidden when showing login
+                splashScreen.classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
+        });
+
+        // Rest of the script...
+        var likeCount = {
+            'post1-likes': 0,
+            'post2-likes': 0,
+            'post3-likes': 0,
+            'post4-likes': 0
+        };
+
+        function toggleLike(btn, countId) {
+            var icon = btn.querySelector('i');
+            var span = btn.querySelector('.heart-count');
+
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                likeCount[countId]++;
+                btn.classList.add('liked', 'pulse');
+            } else {
+                icon.classList.add('far');
+                icon.classList.remove('fas');
+                likeCount[countId]--;
+                btn.classList.remove('liked', 'pulse');
+            }
+
+            setTimeout(function() {
+                btn.classList.remove('pulse');
+            }, 600);
+
+            document.getElementById(countId).textContent = likeCount[countId] + (likeCount[countId] === 1 ? ' Like' : ' Likes');
+        }
+
+        var trainerData = {
+            1: {
+                emoji: '💪',
+                name: 'Marcus Thompson',
+                specialty: 'Strength Training',
+                bio: 'Marcus has been coaching for 8+ years, specializing in powerlifting and functional strength. He\'s NASM certified and loves helping clients achieve their strength goals.',
+                certs: 'NASM CPT, ISSA Strength Coach, CrossFit Level 2',
+                times: `Mon-Fri: 6am-12pm & 4pm-9pm
+Sat: 8am-2pm
+Sun: Closed`
+            },
+            2: {
+                emoji: '🏃',
+                name: 'Sarah Williams',
+                specialty: 'HIIT & Cardio',
+                bio: 'Sarah is passionate about high-intensity training with 6+ years of experience in HIIT and circuit training.',
+                certs: 'ACE CPT, ISSF HIIT Specialist, Spin Instructor',
+                times: `Mon-Fri: 7am-11am & 3pm-8pm
+Sat: 9am-4pm
+Sun: 10am-3pm`
+            },
+            3: {
+                emoji: '🧘',
+                name: 'David Chen',
+                specialty: 'Rehabilitation & Mobility',
+                bio: 'David specializes in injury prevention with a background in physical therapy. He helps clients train smart and stay injury-free.',
+                certs: 'NASM CPT, Corrective Exercise Specialist, Mobility Coach',
+                times: `Mon-Fri: 8am-2pm & 5pm-9pm
+Sat: 8am-1pm
+Sun: Closed`
+            }
+        };
+
+        function switchScreen(screenName) {
+            var screens = document.querySelectorAll('.screen');
+            screens.forEach(function(screen) {
+                screen.classList.remove('active');
+            });
+
+            var selectedScreen = document.getElementById('screen-' + screenName);
+            if (selectedScreen) {
+                selectedScreen.classList.add('active');
+            }
+
+            var navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            var activeNav = document.getElementById('nav-' + screenName);
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
+        }
+
+        function showTrainerDetail(trainerId) {
+            var trainer = trainerData[trainerId];
+            document.getElementById('detail-emoji').textContent = trainer.emoji;
+            document.getElementById('detail-name').textContent = trainer.name;
+            document.getElementById('detail-specialty').textContent = trainer.specialty;
+            document.getElementById('detail-bio').textContent = trainer.bio;
+            document.getElementById('detail-certs').textContent = trainer.certs;
+            document.getElementById('detail-times').textContent = trainer.times;
+
+            document.getElementById('trainer-list-view').classList.add('hidden');
+            document.getElementById('trainer-detail-view').classList.remove('hidden');
+        }
+
+        function backToTrainerList() {
+            document.getElementById('trainer-list-view').classList.remove('hidden');
+            document.getElementById('trainer-detail-view').classList.add('hidden');
+        }
+
+        function toggleAccordion(btn) {
+            var contentId = btn.getAttribute('data-accordion');
+            var content = document.getElementById(contentId);
+            var icon = btn.querySelector('.accordion-icon');
+
+            var allButtons = document.querySelectorAll('.accordion-btn');
+            var allContents = document.querySelectorAll('.accordion-content');
+
+            allButtons.forEach(function(b) {
+                if (b !== btn) {
+                    b.classList.remove('active');
+                    b.querySelector('.accordion-icon').classList.remove('active');
+                }
+            });
+
+            allContents.forEach(function(c) {
+                if (c !== content) {
+                    c.classList.remove('active');
+                }
+            });
+
+            btn.classList.toggle('active');
+            icon.classList.toggle('active');
+            content.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('trainer-1').addEventListener('click', function() {
+                showTrainerDetail(1);
+            });
+            document.getElementById('trainer-2').addEventListener('click', function() {
+                showTrainerDetail(2);
+            });
+            document.getElementById('trainer-3').addEventListener('click', function() {
+                showTrainerDetail(3);
+            });
+
+            document.getElementById('back-btn').addEventListener('click', function() {
+                backToTrainerList();
+            });
+
+            document.getElementById('nav-home').addEventListener('click', function() {
+                switchScreen('home');
+            });
+            document.getElementById('nav-membership').addEventListener('click', function() {
+                switchScreen('membership');
+            });
+            document.getElementById('nav-trainers').addEventListener('click', function() {
+                switchScreen('trainers');
+            });
+            document.getElementById('nav-info').addEventListener('click', function() {
+                switchScreen('info');
+            });
+
+            document.querySelectorAll('.accordion-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    toggleAccordion(btn);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
