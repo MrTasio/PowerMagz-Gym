@@ -1426,6 +1426,14 @@
 
         // Check if already logged in
         window.addEventListener('load', function() {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+            const now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+            }, false);
             var userEmail = localStorage.getItem('userEmail');
             var splashScreen = document.getElementById('splashScreen');
             
