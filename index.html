@@ -473,11 +473,51 @@
             margin-top: 2px;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .header-icon {
             font-size: 24px;
             cursor: pointer;
             opacity: 0.9;
             color: var(--secondary);
+            transition: opacity 0.2s;
+        }
+
+        .header-icon:hover {
+            opacity: 1;
+        }
+
+        .install-header-btn {
+            background: rgba(211, 47, 47, 0.2);
+            border: 1px solid var(--secondary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .install-header-btn:hover {
+            background: rgba(211, 47, 47, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .install-header-btn:active {
+            transform: translateY(0);
+        }
+
+        .install-header-btn.hidden {
+            display: none !important;
         }
 
         .app-content {
@@ -1047,8 +1087,14 @@
                     <div class="header-brand">PowerMagz</div>
                     <div class="header-brand-sub">Gym</div>
                 </div>
-                <div class="header-icon" onclick="handleLogout()" style="cursor: pointer; color: var(--secondary);" title="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
+                <div class="header-actions">
+                    <button class="install-header-btn" id="installHeaderBtn" onclick="handleInstallClick()" title="Install App">
+                        <i class="fas fa-download"></i>
+                        <span>Install</span>
+                    </button>
+                    <div class="header-icon" onclick="handleLogout()" style="cursor: pointer; color: var(--secondary);" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1418,8 +1464,8 @@
             setTimeout(function() {
                 splashScreen.classList.add('hidden');
                 document.getElementById('appContainer').classList.remove('hidden');
-                // Check and show install prompt after app is visible
-                checkAndShowInstallPrompt();
+                // Update install button visibility after app is visible
+                updateInstallButtonVisibility();
             }, 3300);
 
             // Store login info
@@ -1454,7 +1500,6 @@
 
         // PWA: Install Prompt Handling
         let deferredPrompt;
-        let installButton = null;
 
         // Comprehensive function to check if app is already installed
         function isAppInstalled() {
@@ -1482,6 +1527,59 @@
             return false;
         }
 
+        // Function to update install button visibility
+        function updateInstallButtonVisibility() {
+            var installBtn = document.getElementById('installHeaderBtn');
+            if (!installBtn) return;
+
+            if (isAppInstalled()) {
+                // Hide button permanently if app is installed
+                installBtn.classList.add('hidden');
+                console.log('App is installed, hiding install button');
+            } else if (deferredPrompt) {
+                // Show button if we have a deferred prompt
+                installBtn.classList.remove('hidden');
+            } else {
+                // Hide if no prompt available
+                installBtn.classList.add('hidden');
+            }
+        }
+
+        // Handle install button click
+        function handleInstallClick() {
+            // Double-check app isn't installed
+            if (isAppInstalled()) {
+                console.log('App is already installed');
+                updateInstallButtonVisibility();
+                return;
+            }
+            
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        // Mark as installed - will be confirmed by appinstalled event
+                        localStorage.setItem('pwaInstalled', 'true');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                    updateInstallButtonVisibility();
+                }).catch(function(error) {
+                    console.log('Error showing install prompt:', error);
+                    deferredPrompt = null;
+                    updateInstallButtonVisibility();
+                });
+            } else {
+                console.log('No deferred prompt available');
+                updateInstallButtonVisibility();
+            }
+        }
+
         window.addEventListener('beforeinstallprompt', function(e) {
             // If app is already installed, don't capture the event
             if (isAppInstalled()) {
@@ -1493,213 +1591,30 @@
             e.preventDefault();
             // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // If we're already on the home view and haven't shown the prompt, show it now
-            var homeScreen = document.getElementById('screen-home');
-            if (homeScreen && homeScreen.classList.contains('active')) {
-                checkAndShowInstallPrompt();
-            }
+            // Update button visibility
+            updateInstallButtonVisibility();
         });
-
-        // Function to check and show install prompt on home view
-        var installPromptCheckAttempts = 0;
-        var maxInstallPromptAttempts = 10; // Try for up to 5 seconds (10 * 500ms)
-
-        function checkAndShowInstallPrompt() {
-            // Don't show if app is already installed (comprehensive check)
-            if (isAppInstalled()) {
-                console.log('App is already installed, skipping install prompt');
-                return;
-            }
-
-            // Check if we've already shown the prompt and user dismissed it
-            var installPromptShown = localStorage.getItem('installPromptShown');
-            if (installPromptShown === 'true') {
-                console.log('Install prompt already shown, skipping');
-                return;
-            }
-            
-            // Check if user permanently dismissed the prompt
-            var promptDismissed = localStorage.getItem('installPromptDismissed');
-            if (promptDismissed === 'permanent') {
-                console.log('Install prompt was permanently dismissed');
-                return;
-            }
-
-            // Make sure we're on the home view
-            var homeScreen = document.getElementById('screen-home');
-            if (!homeScreen || !homeScreen.classList.contains('active')) {
-                return;
-            }
-
-            // Check if we have a deferred prompt available
-            if (deferredPrompt) {
-                // Wait a bit for the home view to be fully visible
-                setTimeout(function() {
-                    // Double-check we're still on home view
-                    var homeScreen = document.getElementById('screen-home');
-                    if (homeScreen && homeScreen.classList.contains('active')) {
-                        showInstallButton();
-                        // Mark that we've shown it
-                        localStorage.setItem('installPromptShown', 'true');
-                        installPromptCheckAttempts = 0; // Reset counter
-                    }
-                }, 1000); // 1 second after app is shown
-            } else {
-                // If deferredPrompt isn't available yet, wait a bit and try again
-                installPromptCheckAttempts++;
-                if (installPromptCheckAttempts < maxInstallPromptAttempts) {
-                    setTimeout(function() {
-                        checkAndShowInstallPrompt();
-                    }, 500);
-                } else {
-                    // Give up after max attempts
-                    console.log('Install prompt not available after max attempts');
-                    installPromptCheckAttempts = 0;
-                }
-            }
-        }
-
-        function showInstallButton() {
-            // Final check - don't show if app is already installed
-            if (isAppInstalled()) {
-                console.log('App is already installed, not showing install button');
-                return;
-            }
-            
-            // Check if button already exists
-            if (installButton) return;
-
-            // Create install button
-            installButton = document.createElement('button');
-            installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
-            installButton.className = 'install-btn';
-            installButton.style.cssText = `
-                position: fixed;
-                bottom: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                max-width: 480px;
-                width: calc(100% - 24px);
-                padding: 12px 20px;
-                background: linear-gradient(135deg, var(--secondary), #ff5252);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
-                z-index: 1001;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: all 0.3s;
-                animation: slideUpInstall 0.5s ease-out;
-            `;
-
-            installButton.addEventListener('click', function() {
-                // Double-check app isn't installed before showing prompt
-                if (isAppInstalled()) {
-                    console.log('App is already installed, hiding button');
-                    hideInstallButton();
-                    return;
-                }
-                
-                if (deferredPrompt) {
-                    // Show the install prompt
-                    deferredPrompt.prompt();
-                    
-                    // Wait for the user to respond to the prompt
-                    deferredPrompt.userChoice.then(function(choiceResult) {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the install prompt');
-                            // Mark as installed - will be confirmed by appinstalled event
-                            localStorage.setItem('pwaInstalled', 'true');
-                            localStorage.setItem('installPromptShown', 'true');
-                        } else {
-                            console.log('User dismissed the install prompt');
-                            // Mark as shown so it doesn't appear again for this session
-                            localStorage.setItem('installPromptShown', 'true');
-                            // Note: We don't mark as permanently dismissed because
-                            // the browser might show the prompt again later naturally
-                        }
-                        deferredPrompt = null;
-                        hideInstallButton();
-                    }).catch(function(error) {
-                        console.log('Error showing install prompt:', error);
-                        deferredPrompt = null;
-                        hideInstallButton();
-                    });
-                } else {
-                    console.log('No deferred prompt available');
-                    hideInstallButton();
-                }
-            });
-
-            installButton.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(-50%) translateY(-2px)';
-                this.style.boxShadow = '0 6px 16px rgba(211, 47, 47, 0.5)';
-            });
-
-            installButton.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(-50%)';
-                this.style.boxShadow = '0 4px 12px rgba(211, 47, 47, 0.4)';
-            });
-
-            document.body.appendChild(installButton);
-
-            // Add CSS animation
-            if (!document.getElementById('install-btn-style')) {
-                var style = document.createElement('style');
-                style.id = 'install-btn-style';
-                style.textContent = `
-                    @keyframes slideUpInstall {
-                        from {
-                            opacity: 0;
-                            transform: translateX(-50%) translateY(20px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: translateX(-50%) translateY(0);
-                        }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-
-        function hideInstallButton() {
-            if (installButton) {
-                installButton.style.animation = 'slideUpInstall 0.3s ease-out reverse';
-                setTimeout(function() {
-                    if (installButton && installButton.parentNode) {
-                        installButton.parentNode.removeChild(installButton);
-                        installButton = null;
-                    }
-                }, 300);
-            }
-        }
 
         // Hide install button if app is already installed
         window.addEventListener('appinstalled', function() {
             console.log('PWA was installed');
-            hideInstallButton();
             deferredPrompt = null;
             // Mark as installed permanently
             localStorage.setItem('pwaInstalled', 'true');
-            localStorage.setItem('installPromptShown', 'true');
+            // Hide the install button
+            updateInstallButtonVisibility();
         });
 
         // Check if app is already installed on page load
-        if (isAppInstalled()) {
-            console.log('App is already installed - running in standalone/installed mode');
-            // Clear any pending install prompts
-            deferredPrompt = null;
-            if (installButton) {
-                hideInstallButton();
+        window.addEventListener('load', function() {
+            if (isAppInstalled()) {
+                console.log('App is already installed - running in standalone/installed mode');
+                // Clear any pending install prompts
+                deferredPrompt = null;
             }
-        }
+            // Update button visibility on load
+            updateInstallButtonVisibility();
+        });
 
         // Check if already logged in
         window.addEventListener('load', function() {
@@ -1725,8 +1640,8 @@
                 setTimeout(function() {
                     splashScreen.classList.add('hidden');
                     document.getElementById('appContainer').classList.remove('hidden');
-                    // Check and show install prompt after app is visible
-                    checkAndShowInstallPrompt();
+                    // Update install button visibility after app is visible
+                    updateInstallButtonVisibility();
                 }, 3300);
             } else {
                 // Ensure splash is hidden when showing login
