@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PowerMagz - Gym Membership Portal</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#d32f2f">
+    <meta name="description" content="Gym Membership Portal - Access your membership, trainers, and gym updates">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PowerMagz">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -1422,6 +1435,140 @@
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
             }
+        }
+
+        // PWA: Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA: Install Prompt Handling
+        let deferredPrompt;
+        let installButton = null;
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show install button
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            // Check if button already exists
+            if (installButton) return;
+
+            // Create install button
+            installButton = document.createElement('button');
+            installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
+            installButton.className = 'install-btn';
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                max-width: 480px;
+                width: calc(100% - 24px);
+                padding: 12px 20px;
+                background: linear-gradient(135deg, var(--secondary), #ff5252);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: all 0.3s;
+                animation: slideUpInstall 0.5s ease-out;
+            `;
+
+            installButton.addEventListener('click', function() {
+                if (deferredPrompt) {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond to the prompt
+                    deferredPrompt.userChoice.then(function(choiceResult) {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                        hideInstallButton();
+                    });
+                }
+            });
+
+            installButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(-50%) translateY(-2px)';
+                this.style.boxShadow = '0 6px 16px rgba(211, 47, 47, 0.5)';
+            });
+
+            installButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(-50%)';
+                this.style.boxShadow = '0 4px 12px rgba(211, 47, 47, 0.4)';
+            });
+
+            document.body.appendChild(installButton);
+
+            // Add CSS animation
+            if (!document.getElementById('install-btn-style')) {
+                var style = document.createElement('style');
+                style.id = 'install-btn-style';
+                style.textContent = `
+                    @keyframes slideUpInstall {
+                        from {
+                            opacity: 0;
+                            transform: translateX(-50%) translateY(20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(-50%) translateY(0);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function hideInstallButton() {
+            if (installButton) {
+                installButton.style.animation = 'slideUpInstall 0.3s ease-out reverse';
+                setTimeout(function() {
+                    if (installButton && installButton.parentNode) {
+                        installButton.parentNode.removeChild(installButton);
+                        installButton = null;
+                    }
+                }, 300);
+            }
+        }
+
+        // Hide install button if app is already installed
+        window.addEventListener('appinstalled', function() {
+            console.log('PWA was installed');
+            hideInstallButton();
+            deferredPrompt = null;
+        });
+
+        // Check if app is already installed (standalone mode)
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            console.log('App is running in standalone mode');
         }
 
         // Check if already logged in
